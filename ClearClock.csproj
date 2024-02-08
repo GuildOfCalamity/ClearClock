@@ -68,7 +68,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SystemWindows.cs" />
+    <Compile Include="Support\ScreenInformation.cs" />
+    <Compile Include="Support\SettingsManager.cs" />
+    <Compile Include="Support\SystemWindows.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

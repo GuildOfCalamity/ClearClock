@@ -13,11 +13,10 @@
     Closing="Window_Closing"
     Icon="./Icons/clock.png"
     Loaded="Window_Loaded"
-    Unloaded="Window_Unloaded"
     WindowStartupLocation="Manual"
     WindowStyle="None"
     mc:Ignorable="d">
-    <Grid MouseDown="Grid_MouseDown" RenderTransformOrigin="0.5 0.5">
+    <Grid RenderTransformOrigin="0.5 0.5">
         <Grid.RenderTransform>
             <RotateTransform Angle="90" />
         </Grid.RenderTransform>

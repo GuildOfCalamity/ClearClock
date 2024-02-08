@@ -21,30 +21,34 @@ using System.Media;
 namespace ClearClock
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// TODO: Add user's selections to settings manager.
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DispatcherTimer timer = null;
-        private Forms.NotifyIcon notifyIcon;
-        private SoundPlayer tick1 = null;
-        private SoundPlayer tick2 = null;
-        private const int MENU1 = 0;
-        private const int MENU2 = 1;
-        private const int MENU3 = 2;
-        private const int MENU4 = 3;
-        private const int MENU5 = 4;
-        private int cleanCounter = 0;
-        private double screen_bottom = SystemParameters.WorkArea.Bottom;
-        private double screen_top = SystemParameters.WorkArea.Top;
-        private double screen_left = SystemParameters.WorkArea.Left;
-        private double screen_right = SystemParameters.WorkArea.Right;
-        private bool hourNotify = false;
-        private bool tickSound = false;
-        private bool smoothMode = false;
-        private int currentHour = 0;
+        #region [Props]
+        DispatcherTimer timer = null;
+        Forms.NotifyIcon notifyIcon;
+        SoundPlayer tick1 = null;
+        SoundPlayer tick2 = null;
+        const int MENU1 = 0;
+        const int MENU2 = 1;
+        const int MENU3 = 2;
+        const int MENU4 = 3;
+        const int MENU5 = 4;
+        int cleanCounter = 0;
+        double screen_bottom = SystemParameters.WorkArea.Bottom;
+        double screen_top = SystemParameters.WorkArea.Top;
+        double screen_left = SystemParameters.WorkArea.Left;
+        double screen_right = SystemParameters.WorkArea.Right;
+        bool hourNotify = false;
+        bool tickSound = false;
+        bool smoothMode = false;
+        int currentHour = 0;
+        #endregion
 
-        //================================================================================================================
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -66,8 +70,11 @@ namespace ClearClock
             }
         }
 
-        //================================================================================================================
-        private void Timer_Tick(object sender, EventArgs e)
+        #region [Events]
+        /// <summary>
+        /// <see cref="DispatcherTimer"/> event.
+        /// </summary>
+        void Timer_Tick(object sender, EventArgs e)
         {
             UpdateClockAngles();
 
@@ -86,7 +93,7 @@ namespace ClearClock
                 cleanCounter = 0;
                 GC.Collect();
 
-                //Reinforce our topmost setting
+                // Reinforce our topmost setting
                 if (notifyIcon.ContextMenuStrip.Items[MENU1].Image == ClearClock.Properties.Resources.red_x)
                     this.Topmost = false;
                 else
@@ -106,35 +113,10 @@ namespace ClearClock
 
         }
 
-        //================================================================================================================
-        private void UpdateClockAngles()
-        {
-            /*
-             float M_PI   = 3.14159265358979323846
-             float M_PI_2 = 1.57079632679489661923
-
-             float secondsAsRadians = (float)DateTime.Now.Second / 60.0 * 2.0 * M_PI - M_PI_2;
-             float minutesAsRadians = (float)DateTime.Now.Minute / 60.0 * 2.0 * M_PI - M_PI_2;
-             float hoursAsRadians = (float)DateTime.Now.Hour / 12.0 * 2.0 * M_PI - M_PI_2;
-            */
-
-            double hours = DateTime.Now.Hour * 2.0;
-            double minutes = DateTime.Now.Minute * 1.0;
-            minutes += DateTime.Now.Second / 60.0; //add more precision for smooth movement
-            Debug.WriteLine($"> minutes={minutes}");
-            hours += minutes / 60.0; //add more precision for smooth movement
-            Debug.WriteLine($"> hours={hours}");
-            double seconds = (DateTime.Now.Second * 1.0) + (DateTime.Now.Millisecond / 1000.0);
-            //double millisec = Math.Round(DateTime.Now.Millisecond / 1000.0, 6, MidpointRounding.AwayFromZero);
-            PART_HourLine.RenderTransform = new RotateTransform((hours / 24.0) * 360.0, 0.1, 0.1);
-            PART_MinuteLine.RenderTransform = new RotateTransform((minutes / 60.0) * 360.0, 0.1, 0.1);
-            PART_SecondLine.RenderTransform = new RotateTransform((seconds / 60.0) * 360.0, 0.1, 0.1);
-
-
-        }
-
-        //================================================================================================================
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// <see cref="Window"/> event.
+        /// </summary>
+        void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.ShowInTaskbar = false; //hide in TaskBar
             try
@@ -153,20 +135,72 @@ namespace ClearClock
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"NotifyIcon creation error: {ex.Message}");
+                MessageBox.Show($"NotifyIcon creation error: {ex.Message}", "ClearClock", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            // Move to right-most of screen 1
-            if (this.Left < (screen_right - this.Width))
-                this.Left = screen_right - this.Width;
+            #region [Restore user's desired location]
+            if (SettingsManager.WindowWidth != -1)
+            {
+                this.Top = SettingsManager.WindowTop;
+                this.Left = SettingsManager.WindowLeft;
+                this.Width = SettingsManager.WindowWidth;
+                this.Height = SettingsManager.WindowHeight;
 
-            // Move to bottom-most of screen 1
-            if (this.Top < (screen_bottom - this.Height))
-                this.Top = screen_bottom - this.Height;
+                var maxWidth = ScreenInformation.GetMonitorCount() * SystemParameters.WorkArea.Width;
+                var maxHeight = ScreenInformation.GetMonitorCount() * SystemParameters.WorkArea.Height;
+                Debug.WriteLine($"[INFO] MaxWidth:{maxWidth}  MaxHeight:{maxHeight}");
+                if ((SettingsManager.WindowTop + SettingsManager.WindowHeight) > maxHeight)
+                    this.Top = screen_bottom - this.Height;
+                if ((SettingsManager.WindowLeft + SettingsManager.WindowWidth) > maxWidth)
+                    this.Left = screen_right - this.Width;
+            }
+            else
+            {
+                // Move to right-most of screen 1
+                if (this.Left < (screen_right - this.Width))
+                    this.Left = screen_right - this.Width;
+
+                // Move to bottom-most of screen 1
+                if (this.Top < (screen_bottom - this.Height))
+                    this.Top = screen_bottom - this.Height;
+            }
+            #endregion
         }
 
-        //================================================================================================================
-        private void NotifyIcon_Click(object sender, EventArgs e)
+        /// <summary>
+        /// <see cref="Window"/> event.
+        /// </summary>
+        void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (notifyIcon != null)
+            {
+                notifyIcon.Visible = false;
+                notifyIcon.Icon.Dispose();
+                notifyIcon.Dispose();
+                notifyIcon = null;
+            }
+
+            if (timer != null)
+            {
+                timer.Stop();
+                timer = null;
+            }
+
+            if (this.WindowState == WindowState.Normal)
+            {
+                SettingsManager.WindowLeft = this.Left;
+                SettingsManager.WindowTop = this.Top;
+                SettingsManager.WindowHeight = this.Height;
+                SettingsManager.WindowWidth = this.Width;
+            }
+            SettingsManager.WindowState = (int)this.WindowState;
+            SettingsManager.Save(SettingsManager.AppSettings, SettingsManager.Location, SettingsManager.Version);
+        }
+
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void NotifyIcon_Click(object sender, EventArgs e)
         {
             //Application.Current.MainWindow.WindowState = WindowState.Normal;
             if (e is Forms.MouseEventArgs)
@@ -185,8 +219,10 @@ namespace ClearClock
             }
         }
 
-        //================================================================================================================
-        private void OnTopmostClicked(object sender, EventArgs e)
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void OnTopmostClicked(object sender, EventArgs e)
         {
             if (this.Topmost)
             {
@@ -200,8 +236,10 @@ namespace ClearClock
             }
         }
 
-        //================================================================================================================
-        private void OnNotifyClicked(object sender, EventArgs e)
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void OnNotifyClicked(object sender, EventArgs e)
         {
             if (hourNotify)
             {
@@ -214,9 +252,11 @@ namespace ClearClock
                 notifyIcon.ContextMenuStrip.Items[MENU3].Image = ClearClock.Properties.Resources.green_check;
             }
         }
-        
-        //================================================================================================================
-        private void OnSoundClicked(object sender, EventArgs e)
+
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void OnSoundClicked(object sender, EventArgs e)
         {
             if (tickSound)
             {
@@ -230,8 +270,10 @@ namespace ClearClock
             }
         }
 
-        //================================================================================================================
-        private void OnSmoothClicked(object sender, EventArgs e)
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void OnSmoothClicked(object sender, EventArgs e)
         {
             if (timer.Interval == new TimeSpan(0, 0, 0, 0, 25))
             {
@@ -247,46 +289,106 @@ namespace ClearClock
             }
         }
 
-        //================================================================================================================
-        private void OnExitClicked(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
+        /// <summary>
+        /// <see cref="Window"/> event.
+        /// </summary>
+        void OnExitClicked(object sender, EventArgs e) => Application.Current.Shutdown();
 
-
-        //================================================================================================================
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        /// <summary>
+        /// I've replaced this logic with the Window overrides for
+        /// OnMouseLeftButtonDown and OnMouseRightButtonUp.
+        /// </summary>
+        void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
+            {
                 DragMove();
+            }
             else if (e.RightButton == MouseButtonState.Pressed)
+            {
+                e.Handled = true;
                 Application.Current.Shutdown();
-        }
-
-        //================================================================================================================
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // If you try to dispose of the NotifyIcon here it will not
-            // work since the GUI resources are disconnected at this point.
-            // Make sure you call Dispose() in the Window_Closing event.
-        }
-
-        //================================================================================================================
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (notifyIcon != null)
-            {
-                notifyIcon.Visible = false;
-                notifyIcon.Icon.Dispose();
-                notifyIcon.Dispose();
-                notifyIcon = null;
-            }
-
-            if (timer != null)
-            {
-                timer.Stop();
-                timer = null;
             }
         }
+
+        /// <summary>
+        /// Handle dragging the clock face.
+        /// </summary>
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
+
+        /// <summary>
+        /// Provides an alternate way to exit.
+        /// </summary>
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonUp(e);
+            Application.Current.Shutdown();
+        }
+        #endregion
+
+        #region [Helpers]
+        /// <summary>
+        /// Updates the <see cref="Transform"/> for the <see cref="UIElement"/>.
+        /// </summary>
+        void UpdateClockAngles()
+        {
+            /*
+             float M_PI   = 3.14159265358979323846
+             float M_PI_2 = 1.57079632679489661923
+             float secondsAsRadians = (float)DateTime.Now.Second / 60.0 * 2.0 * M_PI - M_PI_2;
+             float minutesAsRadians = (float)DateTime.Now.Minute / 60.0 * 2.0 * M_PI - M_PI_2;
+             float hoursAsRadians = (float)DateTime.Now.Hour / 12.0 * 2.0 * M_PI - M_PI_2;
+            */
+            double hours = DateTime.Now.Hour * 2.0;
+            double minutes = DateTime.Now.Minute * 1.0;
+            minutes += DateTime.Now.Second / 60.0; // add more precision for smooth movement
+            //Debug.WriteLine($"[INFO] minutes => {minutes}");
+            hours += minutes / 60.0; // add more precision for smooth movement
+            //Debug.WriteLine($"[INFO] hours => {hours}");
+            double seconds = (DateTime.Now.Second * 1.0) + (DateTime.Now.Millisecond / 1000.0);
+            //double millisec = Math.Round(DateTime.Now.Millisecond / 1000.0, 6, MidpointRounding.AwayFromZero);
+            PART_HourLine.RenderTransform = new RotateTransform((hours / 24.0) * 360.0, 0.1, 0.1);
+            PART_MinuteLine.RenderTransform = new RotateTransform((minutes / 60.0) * 360.0, 0.1, 0.1);
+            PART_SecondLine.RenderTransform = new RotateTransform((seconds / 60.0) * 360.0, 0.1, 0.1);
+        }
+
+        /// <summary>
+        /// Uses <see cref="Dispatcher.Invoke(Action, DispatcherPriority)"/> for thread safety.
+        /// </summary>
+        public void RunOnUIThread(Action action)
+        {
+            // The Application.Current may be null when closing the
+            // window while a background thread is still running.
+            if (action == null || Application.Current == null)
+                return;
+
+            Dispatcher dispatcher = Application.Current.Dispatcher;
+            if (dispatcher.CheckAccess())
+                action();
+            else
+                dispatcher.Invoke(DispatcherPriority.Normal, (Delegate)(action));
+        }
+
+        /// <summary>
+        /// Uses <see cref="Dispatcher.BeginInvoke(Delegate, DispatcherPriority, object[])"/> for thread safety.
+        /// </summary>
+        public void RunOnUIThreadAsync(Action action)
+        {
+            // The Application.Current may be null when closing the
+            // window while a background thread is still running.
+            if (action == null || Application.Current == null)
+                return;
+
+            Dispatcher dispatcher = Application.Current.Dispatcher;
+            if (dispatcher.CheckAccess())
+                action();
+            else
+                dispatcher.BeginInvoke(DispatcherPriority.Normal, (Delegate)(action));
+        }
+        #endregion
     }
 }
