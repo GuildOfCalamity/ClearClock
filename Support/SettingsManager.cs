@@ -19,6 +19,10 @@ namespace ClearClock
 
         #region [Backing Members]
         static SettingsManager _Settings = null;
+        bool stayOnTop = true;
+        bool smoothSeconds = false;
+        bool notifications = false;
+        bool sound = false;
         bool devMode = false;
         bool firstRun = true;
         double windowWidth = -1;
@@ -34,7 +38,8 @@ namespace ClearClock
         /// Static reference to this class.
         /// </summary>
         /// <remarks>
-        /// The first time this property is used the existing settings will be loaded.
+        /// The first time this property is used the existing settings will be 
+        /// loaded via the <see cref="Load(object, string, string)"/> method.
         /// </remarks>
         public static SettingsManager AppSettings
         {
@@ -106,6 +111,30 @@ namespace ClearClock
             get => AppSettings.devMode;
             set => AppSettings.devMode = value;
         }
+
+        public static bool StayOnTop
+        {
+            get => AppSettings.stayOnTop;
+            set => AppSettings.stayOnTop = value;
+        }
+
+        public static bool SmoothSeconds
+        {
+            get => AppSettings.smoothSeconds;
+            set => AppSettings.smoothSeconds = value;
+        }
+
+        public static bool Sound
+        {
+            get => AppSettings.sound;
+            set => AppSettings.sound = value;
+        }
+
+        public static bool Notifications
+        {
+            get => AppSettings.notifications;
+            set => AppSettings.notifications = value;
+        }
         #endregion
 
         #region [I/O Methods]
@@ -164,7 +193,7 @@ namespace ClearClock
                                                 MethodInfo method = property.PropertyType.GetMethod("Parse", new Type[] { typeof(string) });
                                                 if (method != null)
                                                 {
-                                                    //property contains a parse
+                                                    // Property contains a parse.
                                                     property.SetValue(classRecord, method.Invoke(property, new object[] { data }), null);
                                                 }
                                                 else
@@ -291,10 +320,16 @@ namespace ClearClock
         }
         #endregion
 
-        public override string ToString()
-        {
-            return "{Top=" + WindowTop.ToString(CultureInfo.CurrentCulture) + ",Left=" + WindowLeft.ToString(CultureInfo.CurrentCulture) + ",Width=" + WindowWidth.ToString(CultureInfo.CurrentCulture) + ",Height=" + WindowHeight.ToString(CultureInfo.CurrentCulture) + ",DevMode=" + DevMode.ToString() + "}";
-        }
+        #region [Overrides]
+        public override string ToString() => 
+            "{" +
+            "Top=" + WindowTop.ToString(CultureInfo.CurrentCulture) + "," +
+            "Left=" + WindowLeft.ToString(CultureInfo.CurrentCulture) + "," +
+            "Width=" + WindowWidth.ToString(CultureInfo.CurrentCulture) + "," +
+            "Height=" + WindowHeight.ToString(CultureInfo.CurrentCulture) + "," +
+            "DevMode=" + DevMode.ToString(CultureInfo.CurrentCulture) + "," +
+            "FirstRun=" + FirstRun.ToString(CultureInfo.CurrentCulture) + "," +
+            "}";
+        #endregion
     }
-
 }

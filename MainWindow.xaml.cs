@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Forms = System.Windows.Forms;
 using System.Media;
+using System.IO;
 
 namespace ClearClock
 {
@@ -153,14 +154,27 @@ namespace ClearClock
                     this.Top = screen_bottom - this.Height;
                 if ((SettingsManager.WindowLeft + SettingsManager.WindowWidth) > maxWidth)
                     this.Left = screen_right - this.Width;
+
+                #region [Update menu settings]
+                this.Topmost = SettingsManager.StayOnTop;
+                notifyIcon.ContextMenuStrip.Items[MENU1].Image = SettingsManager.StayOnTop ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+
+                smoothMode = SettingsManager.SmoothSeconds;
+                notifyIcon.ContextMenuStrip.Items[MENU2].Image = SettingsManager.SmoothSeconds ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                timer.Interval = SettingsManager.SmoothSeconds ? new TimeSpan(0, 0, 0, 0, 36) : new TimeSpan(0, 0, 0, 0, 1000);
+
+                hourNotify = SettingsManager.Notifications;
+                notifyIcon.ContextMenuStrip.Items[MENU3].Image = SettingsManager.Notifications ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+
+                tickSound = SettingsManager.Sound;
+                notifyIcon.ContextMenuStrip.Items[MENU4].Image = SettingsManager.Sound ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                #endregion
             }
-            else
+            else // The window params are defaulted to -1, meaning we have not created/loaded a config file yet.
             {
-                // Move to right-most of screen 1
+                // Move to bottom-right of screen work area.
                 if (this.Left < (screen_right - this.Width))
                     this.Left = screen_right - this.Width;
-
-                // Move to bottom-most of screen 1
                 if (this.Top < (screen_bottom - this.Height))
                     this.Top = screen_bottom - this.Height;
             }
@@ -226,13 +240,32 @@ namespace ClearClock
         {
             if (this.Topmost)
             {
-                this.Topmost = false;
+                this.Topmost = SettingsManager.StayOnTop = false;
                 notifyIcon.ContextMenuStrip.Items[MENU1].Image = ClearClock.Properties.Resources.red_x;
             }
             else
             {
-                this.Topmost = true;
+                this.Topmost = SettingsManager.StayOnTop = true;
                 notifyIcon.ContextMenuStrip.Items[MENU1].Image = ClearClock.Properties.Resources.green_check;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="Forms.NotifyIcon"/> event.
+        /// </summary>
+        void OnSmoothClicked(object sender, EventArgs e)
+        {
+            if (timer.Interval == new TimeSpan(0, 0, 0, 0, 36))
+            {
+                smoothMode = SettingsManager.SmoothSeconds = false;
+                timer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.red_x;
+            }
+            else
+            {
+                smoothMode = SettingsManager.SmoothSeconds = true;
+                timer.Interval = new TimeSpan(0, 0, 0, 0, 36);
+                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.green_check;
             }
         }
 
@@ -243,12 +276,12 @@ namespace ClearClock
         {
             if (hourNotify)
             {
-                hourNotify = false;
+                hourNotify = SettingsManager.Notifications = false;
                 notifyIcon.ContextMenuStrip.Items[MENU3].Image = ClearClock.Properties.Resources.red_x;
             }
             else
             {
-                hourNotify = true;
+                hourNotify = SettingsManager.Notifications = true;
                 notifyIcon.ContextMenuStrip.Items[MENU3].Image = ClearClock.Properties.Resources.green_check;
             }
         }
@@ -260,32 +293,13 @@ namespace ClearClock
         {
             if (tickSound)
             {
-                tickSound = false;
+                tickSound = SettingsManager.Sound = false;
                 notifyIcon.ContextMenuStrip.Items[MENU4].Image = ClearClock.Properties.Resources.red_x;
             }
             else
             {
-                tickSound = true;
+                tickSound = SettingsManager.Sound = true;
                 notifyIcon.ContextMenuStrip.Items[MENU4].Image = ClearClock.Properties.Resources.green_check;
-            }
-        }
-
-        /// <summary>
-        /// <see cref="Forms.NotifyIcon"/> event.
-        /// </summary>
-        void OnSmoothClicked(object sender, EventArgs e)
-        {
-            if (timer.Interval == new TimeSpan(0, 0, 0, 0, 25))
-            {
-                smoothMode = false;
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.red_x;
-            }
-            else
-            {
-                smoothMode = true;
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 25);
-                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.green_check;
             }
         }
 
