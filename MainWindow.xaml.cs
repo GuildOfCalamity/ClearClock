@@ -100,7 +100,8 @@ namespace ClearClock
                 else
                 {
                     this.Topmost = true;
-                    Application.Current.Dispatcher.Invoke(() => this.Activate());
+                    // This can steal the focus when the user is engaged in a different application.
+                    //Application.Current.Dispatcher.Invoke(() => this.Activate());
                 }
             }
 
