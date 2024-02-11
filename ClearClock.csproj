@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>clock.ico</ApplicationIcon>
+    <ApplicationIcon>clock-bold.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -143,6 +143,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\clock.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="clock-bold.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\clock-bold.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\clock-bold.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

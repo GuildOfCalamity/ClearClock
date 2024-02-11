@@ -124,7 +124,7 @@ namespace ClearClock
             try
             {
                 notifyIcon = new Forms.NotifyIcon();
-                notifyIcon.Icon = ClearClock.Properties.Resources.clock;
+                notifyIcon.Icon = ClearClock.Properties.Resources.clock_bold1;
                 notifyIcon.Text = Assembly.GetExecutingAssembly().GetName().Name;
                 notifyIcon.Click += NotifyIcon_Click;
                 notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();

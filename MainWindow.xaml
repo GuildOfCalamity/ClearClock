@@ -11,7 +11,7 @@
     AllowsTransparency="True"
     Background="Transparent"
     Closing="Window_Closing"
-    Icon="./Icons/clock.png"
+    Icon="./Icons/clock-bold.png"
     Loaded="Window_Loaded"
     WindowStartupLocation="Manual"
     WindowStyle="None"
