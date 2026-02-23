@@ -1,23 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Reflection;
-using Forms = System.Windows.Forms;
 using System.Media;
-using System.IO;
+using Forms = System.Windows.Forms;
 
 namespace ClearClock
 {
@@ -95,7 +88,7 @@ namespace ClearClock
                 GC.Collect();
 
                 // Reinforce our topmost setting
-                if (notifyIcon.ContextMenuStrip.Items[MENU1].Image == ClearClock.Properties.Resources.red_x)
+                if (notifyIcon.ContextMenuStrip.Items[MENU1].Image == ClearClock.Properties.Resources.gray_check)
                     this.Topmost = false;
                 else
                 {
@@ -128,11 +121,11 @@ namespace ClearClock
                 notifyIcon.Text = Assembly.GetExecutingAssembly().GetName().Name;
                 notifyIcon.Click += NotifyIcon_Click;
                 notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
-                notifyIcon.ContextMenuStrip.Items.Add("Stay on top", ClearClock.Properties.Resources.green_check, OnTopmostClicked);  // MENU1
-                notifyIcon.ContextMenuStrip.Items.Add("Smooth seconds", ClearClock.Properties.Resources.red_x, OnSmoothClicked);      // MENU2
-                notifyIcon.ContextMenuStrip.Items.Add("Hour notifications", ClearClock.Properties.Resources.red_x, OnNotifyClicked); // MENU3
-                notifyIcon.ContextMenuStrip.Items.Add("Play tick sound", ClearClock.Properties.Resources.red_x, OnSoundClicked); // MENU4
-                notifyIcon.ContextMenuStrip.Items.Add("Exit application", ClearClock.Properties.Resources.exit, OnExitClicked);       // MENU5
+                notifyIcon.ContextMenuStrip.Items.Add("Stay on top", ClearClock.Properties.Resources.green_check, OnTopmostClicked);      // MENU1
+                notifyIcon.ContextMenuStrip.Items.Add("Smooth seconds", ClearClock.Properties.Resources.gray_check, OnSmoothClicked);     // MENU2
+                notifyIcon.ContextMenuStrip.Items.Add("Hour notifications", ClearClock.Properties.Resources.gray_check, OnNotifyClicked); // MENU3
+                notifyIcon.ContextMenuStrip.Items.Add("Play tick sound", ClearClock.Properties.Resources.gray_check, OnSoundClicked);     // MENU4
+                notifyIcon.ContextMenuStrip.Items.Add("Exit application", ClearClock.Properties.Resources.exit, OnExitClicked);           // MENU5
                 notifyIcon.Visible = true;
             }
             catch (Exception ex)
@@ -158,17 +151,17 @@ namespace ClearClock
 
                 #region [Update menu settings]
                 this.Topmost = SettingsManager.StayOnTop;
-                notifyIcon.ContextMenuStrip.Items[MENU1].Image = SettingsManager.StayOnTop ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU1].Image = SettingsManager.StayOnTop ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.gray_check;
 
                 smoothMode = SettingsManager.SmoothSeconds;
-                notifyIcon.ContextMenuStrip.Items[MENU2].Image = SettingsManager.SmoothSeconds ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU2].Image = SettingsManager.SmoothSeconds ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.gray_check;
                 timer.Interval = SettingsManager.SmoothSeconds ? new TimeSpan(0, 0, 0, 0, 36) : new TimeSpan(0, 0, 0, 0, 1000);
 
                 hourNotify = SettingsManager.Notifications;
-                notifyIcon.ContextMenuStrip.Items[MENU3].Image = SettingsManager.Notifications ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU3].Image = SettingsManager.Notifications ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.gray_check;
 
                 tickSound = SettingsManager.Sound;
-                notifyIcon.ContextMenuStrip.Items[MENU4].Image = SettingsManager.Sound ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU4].Image = SettingsManager.Sound ? ClearClock.Properties.Resources.green_check : ClearClock.Properties.Resources.gray_check;
                 #endregion
             }
             else // The window params are defaulted to -1, meaning we have not created/loaded a config file yet.
@@ -242,7 +235,7 @@ namespace ClearClock
             if (this.Topmost)
             {
                 this.Topmost = SettingsManager.StayOnTop = false;
-                notifyIcon.ContextMenuStrip.Items[MENU1].Image = ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU1].Image = ClearClock.Properties.Resources.gray_check;
             }
             else
             {
@@ -260,7 +253,7 @@ namespace ClearClock
             {
                 smoothMode = SettingsManager.SmoothSeconds = false;
                 timer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU2].Image = ClearClock.Properties.Resources.gray_check;
             }
             else
             {
@@ -278,7 +271,7 @@ namespace ClearClock
             if (hourNotify)
             {
                 hourNotify = SettingsManager.Notifications = false;
-                notifyIcon.ContextMenuStrip.Items[MENU3].Image = ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU3].Image = ClearClock.Properties.Resources.gray_check;
             }
             else
             {
@@ -295,7 +288,7 @@ namespace ClearClock
             if (tickSound)
             {
                 tickSound = SettingsManager.Sound = false;
-                notifyIcon.ContextMenuStrip.Items[MENU4].Image = ClearClock.Properties.Resources.red_x;
+                notifyIcon.ContextMenuStrip.Items[MENU4].Image = ClearClock.Properties.Resources.gray_check;
             }
             else
             {

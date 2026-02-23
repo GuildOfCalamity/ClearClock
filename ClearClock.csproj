@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>clock-bold.ico</ApplicationIcon>
+    <ApplicationIcon>clock-bold-128.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -152,6 +152,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\clock-bold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\clock-bold-128.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="clock-bold-128.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\gray_check.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -136,6 +136,9 @@
   <data name="green_check" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\green_check.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="gray_check" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\gray_check.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="red_x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\red_x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
